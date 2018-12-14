@@ -3,7 +3,7 @@
 
 #define ARRAY_SIZE 10
 #define LINES 1001
-#define TIMESFREQ 1000
+#define TIMESFREQ 200
 
 int searchTwice(int arr[], int pos, int num);
 
@@ -16,6 +16,7 @@ int main() {
 	FILE *f;
 
 	for (int times = 0; times < TIMESFREQ; times++) {
+		printf("iteration: %d\n", times);
 		f = fopen("input.txt", "r");
 		if (f == NULL) {
 			printf("Unable to open file");
@@ -42,6 +43,7 @@ int main() {
 
 		fclose(f);
 
+		if (twice != 0) break;
 		if (!times) freq_ones = freq;
 	}
 
@@ -51,7 +53,7 @@ int main() {
 }
 
 int searchTwice(int arr[], int pos, int num) {
-	for (int i = 0; i < LINES; i++) {
+	for (int i = 0; i < LINES * TIMESFREQ; i++) {
 		if (i != pos) {
 			if (arr[i] == num) return num;
 		}
