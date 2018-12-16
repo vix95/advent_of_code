@@ -1,22 +1,24 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 
-#define ARRAY_SIZE 10
+#define ARRAY_SIZE 30
 #define LINES 1001
 #define TIMESFREQ 200
 
-int searchTwice(int arr[], int pos, int num);
+long searchTwice(long arr[], long pos, long num);
 
 int main() {
-	int freq = 0;
-	int freq_ones = 0;
-	int freqArr[LINES * TIMESFREQ];
-	int row = 0;
-	int twice = 0;
+	long freq = 0;
+	long freq_ones = 0;
+	long freqArr[LINES * TIMESFREQ];
+	long row = 0;
+	long twice = 0;
 	FILE *f;
 
 	for (int times = 0; times < TIMESFREQ; times++) {
 		printf("iteration: %d\n", times);
+
+		// input.txt; input2.txt
 		f = fopen("input.txt", "r");
 		if (f == NULL) {
 			printf("Unable to open file");
@@ -25,9 +27,10 @@ int main() {
 
 		char line[ARRAY_SIZE];
 		while (fgets(line, sizeof line, f) != NULL) {
-			int num = 0;
+			long num = 0;
+
 			for (int i = 1; i < ARRAY_SIZE; i++) {
-				if (line[i] == '\n') break;
+				if (line[i] == '\n' || line[i] == '\0') break;
 				num = num * 10 + (line[i] - 48);
 			}
 
@@ -52,8 +55,8 @@ int main() {
 	return 0;
 }
 
-int searchTwice(int arr[], int pos, int num) {
-	for (int i = 0; i < LINES * TIMESFREQ; i++) {
+int searchTwice(long arr[], long pos, long num) {
+	for (long i = 0; i < LINES * TIMESFREQ; i++) {
 		if (i != pos) {
 			if (arr[i] == num) return num;
 		}

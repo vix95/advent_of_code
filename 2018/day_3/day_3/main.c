@@ -2,10 +2,10 @@
 #include <stdio.h>
 
 #define ARRAY_SIZE 30
-#define X 1008
-#define Y 1008
+#define X 1010
+#define Y 1010
 
-void setPoints(char arr[], char area[][Y], long *covered);
+void setPoints(char arr[], char area[][Y], long *covered, long *covered_value);
 void getId(char arr[], int *id, int *pos);
 void getXY(char arr[], int *x, int *y, int *pos);
 void getWH(char arr[], int *w, int *h, int *pos);
@@ -19,6 +19,7 @@ int main() {
 			area[i][j] = '.';
 
 	long covered = 0;
+	long covered_value = 0;
 	FILE *f;
 
 	// load input_test to test; area 8x8
@@ -29,18 +30,19 @@ int main() {
 	}
 
 	char line[ARRAY_SIZE];
-	while (fgets(line, sizeof line, f) != NULL) setPoints(line, area, &covered);
+	while (fgets(line, sizeof line, f) != NULL) setPoints(line, area, &covered, &covered_value);
 
 	fclose(f);
 
 	//printArea(area);
 	printf("\n\nCount of X: %d\n", countX(area));
-	printf("Count of sum X: %d", covered);
+	printf("Count of sum X: %d]\n", covered);
+	printf("Count of sum vakue X: %d", covered_value);
 
 	return 0;
 }
 
-void setPoints(char arr[], char area[][Y], long *covered) {
+void setPoints(char arr[], char area[][Y], long *covered, long *covered_value) {
 	int id = 0;
 	int pos = 0;
 	int x = 0;
@@ -58,6 +60,8 @@ void setPoints(char arr[], char area[][Y], long *covered) {
 				area[i][j] = id + '0';
 			}
 			else {
+				if (area[i][j] != 'X') *covered_value = *covered_value + area[i][j];
+				*covered_value = *covered_value + id;
 				area[i][j] = 'X';
 				*covered = *covered + 1;
 			}
