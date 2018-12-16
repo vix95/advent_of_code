@@ -1,48 +1,58 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <stdlib.h>
 
 #define ARRAY_SIZE 30
-#define X 1010
-#define Y 1010
+#define X 1005
+#define Y 1005
+#define OV_SIZE 2000
 
-void setPoints(char arr[], char area[][Y], long *covered, long *covered_value);
+void setPoints(char arr[], int area[], int ov[]);
 void getId(char arr[], int *id, int *pos);
 void getXY(char arr[], int *x, int *y, int *pos);
 void getWH(char arr[], int *w, int *h, int *pos);
-long countX(char arr[][Y]);
-void printArea(char arr[][Y]);
+long countX(int arr[]);
+void printArea(int arr[]);
+int searchUncovered(int arr[]);
 
 int main() {
-	char area[X][Y];
-	for (int i = 0; i < X; i++)
-		for (int j = 0; j < Y; j++)
-			area[i][j] = '.';
+	int *area = malloc(X * Y * sizeof(int));
+
+	int overlap[OV_SIZE];
+	for (int i = 0; i < X; i++) {
+		for (int j = 0; j < Y; j++) {
+			area[i * X + j] = 0;
+		}
+	}
 
 	long covered = 0;
-	long covered_value = 0;
 	FILE *f;
 
-	// load input_test to test; area 8x8
-	f = fopen("input.txt", "r");
+	f = fopen("input3.txt", "r");
 	if (f == NULL) {
 		printf("Unable to open file");
 		return 1;
 	}
 
 	char line[ARRAY_SIZE];
-	while (fgets(line, sizeof line, f) != NULL) setPoints(line, area, &covered, &covered_value);
+	int row = 0;
+	while (fgets(line, sizeof line, f) != NULL) {
+		row++;
+		setPoints(line, area, overlap);
+	}
 
 	fclose(f);
 
+	for (int i = 0; i < X; i++) free(area[i]);
+
 	//printArea(area);
-	printf("\n\nCount of X: %d\n", countX(area));
-	printf("Count of sum X: %d]\n", covered);
-	printf("Count of sum vakue X: %d", covered_value);
+	printf("\n\nPart 1: %d\n", countX(area));
+	printf("Part 2: %d\n", searchUncovered(overlap));
 
 	return 0;
 }
 
-void setPoints(char arr[], char area[][Y], long *covered, long *covered_value) {
+void setPoints(char arr[], int area[], int ov[]) {
 	int id = 0;
 	int pos = 0;
 	int x = 0;
@@ -54,16 +64,17 @@ void setPoints(char arr[], char area[][Y], long *covered, long *covered_value) {
 	getWH(arr, &w, &h, &pos);
 	printf("#%d @ %d,%d: %dx%d\n", id, x, y, w, h);
 
-	for (int i = y; i < w + y; i++) {
-		for (int j = x; j < h + x; j++) {
-			if (area[i][j] == '.') {
-				area[i][j] = id + '0';
+	ov[id - 1] = id;
+
+	for (int i = x; i < w + x; i++) {
+		for (int j = y; j < h + y; j++) {
+			if (area[i * X + j] == 0) {
+				area[i * X + j] = id;
 			}
 			else {
-				if (area[i][j] != 'X') *covered_value = *covered_value + area[i][j];
-				*covered_value = *covered_value + id;
-				area[i][j] = 'X';
-				*covered = *covered + 1;
+				ov[id - 1] = 0;
+				ov[area[i * X + j] - 1] = 0;
+				area[i * X + j] = -1;
 			}
 		}
 	}
@@ -127,23 +138,31 @@ void getWH(char arr[], int *w, int *h, int *pos) {
 	}
 }
 
-long countX(char arr[][Y]) {
+long countX(int arr[]) {
 	long x = 0;
 	for (int i = 0; i < X; i++) {
 		for (int j = 0; j < Y; j++) {
-			if (arr[i][j] == 'X') x++;
+			if (arr[i * X + j] == -1) x++;
 		}
 	}
 
 	return x;
 }
 
-void printArea(char arr[][Y]) {
+void printArea(int arr[]) {
 	int x = 0;
 	for (int i = 0; i < X; i++) {
 		for (int j = 0; j < Y; j++) {
-			printf("%c", arr[i][j]);
+			printf("%d", arr[i * X + j]);
 		}
 		printf("\n");
 	}
+}
+
+int searchUncovered(int arr[]) {
+	for (int i = 0; i < X; i++) {
+		if (arr[i] != 0) return arr[i];
+	}
+
+	return 0;
 }
